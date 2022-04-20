@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import {v4 as uuidv4} from 'uuid';  
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
 import Tasks from "./components/Tasks"
-import './App.css';
+import Header from './components/Header';
 import AddTask from './components/AddTask';
-import {v4 as uuidv4} from 'uuid';
+
+import './App.css';
 
 const App = () => {
   // let message = 'Hello World';
@@ -19,6 +23,17 @@ const App = () => {
     }
   ]);
 
+  const handleTaskClick = (taskId) => {
+    const newTasks = tasks.map((task) => {
+      if (task.id === taskId) return {  ...task, completed: !task.completed };
+
+      return task;
+    });
+
+    setTasks(newTasks);
+  }
+
+  // FUNCAO PARA ADICIONAR UMA NOVA TASK
   const handleTaskAddition = (taskTitle) => {
     const newTasks = [...tasks, 
     {
@@ -30,13 +45,25 @@ const App = () => {
     setTasks(newTasks);
   }
 
+  // FUNCAO PARA DELETAR UMA TASK
+  const handleTaskDelete = (taskId) => {
+    const newTasks = tasks.filter((task) => task.id !== taskId);
+
+    setTasks(newTasks);
+  }
+
   return (
-    <>
+    <Router>
       <div className='container'>
-        <AddTask handleTaskAddition={handleTaskAddition}/>
-        <Tasks tasks={tasks}/>
+        <Header /> 
+        <Route path="/" exact render={() => (
+          <>
+            <AddTask handleTaskAddition={handleTaskAddition}/>
+            <Tasks tasks={tasks} handleTaskClick={handleTaskClick} handleTaskDelete={handleTaskDelete}/>
+          </>
+        )}/>
       </div>
-    </>
+    </Router>
   );
 };
 
